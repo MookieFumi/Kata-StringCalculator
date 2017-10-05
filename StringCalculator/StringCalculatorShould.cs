@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace StringCalculator
 {
@@ -23,30 +24,41 @@ namespace StringCalculator
             result.Should().Be(1);
         }
 
-        [Fact]
-        public void return_3_if_param_is_12()
+        [Theory]
+        [InlineData("1,2", 3)]
+        [InlineData("1,2,3", 6)]
+        [InlineData("1,2,3,4", 10)]
+        public void return_3_if_param_is_12_comma_separated(string input, int output)
         {
             var sut = new StringCalculator();
-            var result = sut.Add("1,2");
-            result.Should().Be(3);
+            var result = sut.Add(input);
+            result.Should().Be(output);
+        }
+
+        [Theory]
+        [InlineData("1\n2", 3 )]
+        [InlineData("1\n2,3", 6)]
+        public void return_6_if_param_is_123_newline_separated(string input, int output)
+        {
+            var sut = new StringCalculator();
+            var result = sut.Add(input);
+            result.Should().Be(output);
         }
     }
 
     public class StringCalculator
     {
+        private readonly char[] _separators = { ',', '\n' };
+
         public int Add(string numbers)
         {
-            if (numbers.Contains(','))
-            {
-                var splited = numbers.Split(',');
-                return splited.Sum(int.Parse);
-            }
-
             if (string.IsNullOrEmpty(numbers))
             {
                 return 0;
             }
-            return int.Parse(numbers);
+
+            var splited = numbers.Split(_separators);
+            return splited.Sum(int.Parse);
         }
     }
 }
