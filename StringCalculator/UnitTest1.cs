@@ -20,7 +20,7 @@ namespace StringCalculator
     {
         public int Add(string numbers)
         {
-            return 2;
+            return 0;
         }
     }
 }
